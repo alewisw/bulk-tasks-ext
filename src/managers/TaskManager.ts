@@ -20,6 +20,9 @@ class BulkTasksManager {
 			RENAME_NAMING_CONVENTION:
 				// @ts-expect-error
 				(game.settings?.get(moduleId, 'defaultRenameNamingConvention') as string) || '{name}',
+			KEEP_IDS_ON_IMPORT:
+				// @ts-expect-error
+				(game.settings?.get(moduleId, 'keepIdsOnImport') as boolean) || false,
 		};
 	}
 
@@ -313,19 +316,20 @@ class BulkTasksManager {
 		return packageBlob;
 	}
 
-	static async importDocuments(documents: any[]) {
+	static async importDocuments(documents: any[], options: ImportOptions) {
 		if (!documents.length) return;
 
 		// Prepare data
 		const importData: Record<string, any[]> = documents.reduce((acc, data) => {
 			const type = inferDocumentType(data);
-			console.log(type);
-			if (!type) return;
+			if (!type) return acc;
 
 			acc[type] ??= [];
 			acc[type].push(data);
 			return acc;
 		}, {});
+
+		const operation = options.keepIdsOnImport ? { keepId: true, keepEmbeddedIds: true } : {};
 
 		for await (const [type, docs] of Object.entries(importData)) {
 			const cls = CONFIG[type].documentClass;
@@ -336,7 +340,7 @@ class BulkTasksManager {
 			}
 
 			for await (const chunk of chunks) {
-				await cls.createDocuments(chunk);
+				await cls.createDocuments(chunk, operation);
 			}
 		}
 	}
@@ -559,6 +563,10 @@ export interface ExportFileNamingOptions {
 	time: string;
 	documentName: string;
 	documentId: string;
+}
+
+export interface ImportOptions {
+	keepIdsOnImport: boolean;
 }
 
 export interface DuplicateOptions {
