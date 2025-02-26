@@ -1,7 +1,7 @@
 <script lang="ts">
     import { SvelteSet } from "svelte/reactivity";
 
-    import { BulkTasksManager } from "../managers/TaskManager.ts";
+    import { BulkTasksManager, ExportFileFormat } from "../managers/TaskManager.ts";
     import { buildDirectory } from "../utils/buildDirectory.ts";
     import { localize } from "../utils/localize.ts";
 
@@ -10,27 +10,39 @@
     import SecondaryNav from "./components/SecondaryNav.svelte";
 
     async function exportDocs() {
-        const options = {
-            namingConvention,
-            preserveFolders,
-            preserveMetaData,
-            zipName,
-        };
+      const exportFileFormat = exportFormat.id;
+      const options = {
+        namingConvention,
+        preserveFolders,
+        preserveMetaData,
+        fileName,
+        exportFileFormat,
+      };
 
         await BulkTasksManager.exportDocuments(new Set(selected), options);
     }
 
     let { currentSecondaryTab } = $props();
 
+    let exportFormatOptions = $state([
+      {
+        id: ExportFileFormat.Zip,
+        text: 'ZIP File',
+      },
+      {
+        id: ExportFileFormat.JsonPackage,
+        text: 'JSON Package File',
+      },
+    ]);
+
     let selected = new SvelteSet<string>();
     let directory = $state(buildDirectory(currentSecondaryTab));
-    let namingConvention = $state(
-        BulkTasksManager.DEFAULTS.EXPORT_NAMING_CONVENTION,
-    );
-    let zipName = $state(BulkTasksManager.DEFAULTS.EXPORT_ZIP_NAME);
+    let namingConvention = $state(BulkTasksManager.DEFAULTS.EXPORT_NAMING_CONVENTION);
+    let fileName = $state(BulkTasksManager.DEFAULTS.EXPORT_FILE_NAME);
     let preserveFolders = $state(true);
     let preserveMetaData = $state(true);
-    let searchParam = $state("");
+    let searchParam = $state('');
+    let exportFormat = $state();
 </script>
 
 <section class="bm-dialog-body bm-dialog-body__export">
@@ -44,12 +56,25 @@
 
     <div class="bm-config-view">
         <label class="bm-config-view__label">
-            <span> Zip Name </span>
+            <span> File Format </span>
+
+            <select bind:value={exportFormat}>
+                {#each exportFormatOptions as opt}
+                    <option value={opt}>
+                        {opt.text}
+                    </option>
+                {/each}
+            </select>
+
+        </label>
+
+        <label class="bm-config-view__label">
+            <span> File Name </span>
 
             <input
                 class="bm-config-view__input"
                 type="text"
-                bind:value={zipName}
+                bind:value={fileName}
             />
         </label>
 
