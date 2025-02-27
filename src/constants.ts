@@ -1,2 +1,2 @@
-export const moduleName = 'Bulk Tasks' as const;
-export const moduleId = 'bulk-tasks' as const;
+export const moduleName = 'Bulk Tasks Extended' as const;
+export const moduleId = 'bulk-tasks-ext' as const;
