@@ -32,6 +32,9 @@ class BulkTasksManager {
       KEEP_IDS_ON_IMPORT:
         // @ts-expect-error
         (game.settings?.get(moduleId, "keepIdsOnImport") as boolean) || false,
+      KEEP_OWNERSHIP_ON_IMPORT:
+        // @ts-expect-error
+        (game.settings?.get(moduleId, "keepOwnershipOnImport") as boolean) || false,
     };
   }
 
@@ -350,6 +353,23 @@ class BulkTasksManager {
 
     for await (const [type, docs] of Object.entries(importData)) {
       const cls = CONFIG[type].documentClass;
+
+      if (options.keepOwnershipOnImport)
+      {
+        for (let i = 0; i < docs.length; i++) {
+          const doc = docs[i]
+          const existingDoc = cls.get(doc._id)
+          if (existingDoc !== null)
+          {
+            const data = existingDoc.toCompendium(null);
+            if ("ownership" in data)
+            {
+              doc["ownership"] = data["ownership"]
+            }
+          }
+        }
+      }
+
       const chunkSize = 100;
       const chunks: any[] = [];
       for (let i = 0; i < Math.ceil(docs.length / chunkSize); i++) {
@@ -602,6 +622,7 @@ export interface ExportFileNamingOptions {
 
 export interface ImportOptions {
   keepIdsOnImport: boolean;
+  keepOwnershipOnImport: boolean;
 }
 
 export interface DuplicateOptions {

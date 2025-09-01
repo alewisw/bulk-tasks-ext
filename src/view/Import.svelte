@@ -19,6 +19,7 @@
     async function importData() {
         const options = {
             keepIdsOnImport,
+            keepOwnershipOnImport,
         };
 
         loading = true;
@@ -30,6 +31,7 @@
     let documents: any[] = $state([]);
     let documentCount = $derived(documents.length);
     let keepIdsOnImport = $state(BulkTasksManager.DEFAULTS.KEEP_IDS_ON_IMPORT);
+    let keepOwnershipOnImport = $state(BulkTasksManager.DEFAULTS.KEEP_OWNERSHIP_ON_IMPORT);
 </script>
 
 <section class="bm-dialog-body bm-dialog-body__import">
@@ -79,6 +81,23 @@
                 <i
                     class="fa-solid fa-circle-question"
                     data-tooltip="Preserve any document IDs in the imported documents."
+                >
+                </i>
+            </span>
+        </label>
+
+        <label class="bm-config-view__label bm-config-view__label--row">
+            <input
+                class="bm-config-view__input"
+                bind:checked={keepOwnershipOnImport}
+                type="checkbox"
+            />
+
+            <span>
+                Keep Ownership on import
+                <i
+                    class="fa-solid fa-circle-question"
+                    data-tooltip="Preserve any current document ownership in the imported documents with the same ID."
                 >
                 </i>
             </span>

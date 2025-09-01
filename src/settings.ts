@@ -68,4 +68,12 @@ export function registerSettings() {
 		type: Boolean,
 		default: false,
 	});
+
+	game.settings?.register(moduleId, 'keepOwnershipOnImport', {
+		name: 'BulkTasks.settings.keepOwnershipOnImport.title',
+		scope: 'world',
+		config: true,
+		type: Boolean,
+		default: false,
+	});
 }

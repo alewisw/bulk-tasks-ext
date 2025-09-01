@@ -36,7 +36,8 @@
 					"all": "Everyone"
 				}
 			},
-			"keepIdsOnImport": { "title": "Keep IDs on Import" }
+			"keepIdsOnImport": { "title": "Keep IDs on Import" },
+			"keepOwnershipOnImport": { "title": "Keep Ownership on Import" }
 		}
 	},
 	"BM.deleteTitle": "Delete Selected",
